@@ -94,6 +94,7 @@ public:
 
 	/**
 	\brief Set the data describing the differential.
+	 设置描述差异的数据
 	@see PxVehicleDifferential4WData
 	*/
 	void setDiffData(const PxVehicleDifferential4WData& diff);

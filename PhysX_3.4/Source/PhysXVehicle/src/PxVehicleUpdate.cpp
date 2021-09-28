@@ -1265,8 +1265,7 @@ PX_FORCE_INLINE void getTankControlValues(const PxVehicleDriveDynData& driveDynD
 //The autobox can be turned off and simulated externally by setting 
 //the target gear as required prior to calling PxVehicleUpdates.
 ////////////////////////////////////////////////////////////////////////////
-
-
+//变速逻辑
 PX_FORCE_INLINE PxF32 processAutoBox(const PxU32 accelIndex, const PxF32 timestep, const PxVehicleDriveSimData& vehCoreSimData, PxVehicleDriveDynData& vehDynData)
 {
 	PX_ASSERT(vehDynData.getUseAutoGears());
@@ -1335,7 +1334,7 @@ PX_FORCE_INLINE PxF32 processAutoBox(const PxU32 accelIndex, const PxF32 timeste
 //This can be bypassed by always forcing target gear = current gear and then 
 //externally managing gear changes prior to calling PxVehicleUpdates.
 ////////////////////////////////////////////////////////////////////////////
-
+//处理变速逻辑
 void processGears(const PxF32 timestep, const PxVehicleGearsData& gears, PxVehicleDriveDynData& car)
 {
 	//const PxVehicleGearsData& gears=car.mVehicleSimData.getGearsData();
@@ -1891,6 +1890,7 @@ PX_FORCE_INLINE void computeNoDriveBrakeTorques
 	isBrakeApplied[3]=(rawBrakeTroques[3]!=0);
 }
 
+//计算刹车力矩
 PX_FORCE_INLINE void computeBrakeAndHandBrakeTorques
 (const PxVehicleWheelData* PX_RESTRICT wheelDatas, const PxF32* PX_RESTRICT wheelOmegas, const PxF32 brake, const PxF32 handbrake, 
  PxF32* PX_RESTRICT brakeTorques, bool* isBrakeApplied)
@@ -2845,6 +2845,7 @@ void storeHit
 	cachedHitQueryTypes[i] = hitQueryType;
 }
 
+//关键函数，计算悬架轮胎车轮
 void processSuspTireWheels
 (const PxU32 startWheelIndex, 
  const ProcessSuspWheelTireConstData& constData, const ProcessSuspWheelTireInputData& inputData, 
@@ -3869,7 +3870,8 @@ void solveDrive4WInternaDynamicsEnginePlusDrivenWheels
 		solver.solve(maxIterations, gSolverTolerance, A, b, result);
 	}
 
-	//Check for sanity in the resultant internal rotation speeds.
+//    检查由此产生的内部旋转速度是否合理。
+    //Check for sanity in the resultant internal rotation speeds.
 	//If the brakes are on and the wheels have switched direction then lock them at zero.
 	//A consequence of this quick fix is that locked wheels remain locked until the brake is entirely released.
 	//This isn't strictly mathematically or physically correct - a more accurate solution would either formulate the 
@@ -4778,7 +4780,7 @@ public:
 
 	static void shiftOrigin(const PxVec3& shift, const PxU32 numVehicles, PxVehicleWheels** vehicles);
 };
-
+//更新4轮车辆
 void PxVehicleUpdate::updateDrive4W(
 const PxF32 timestep, 
 const PxVec3& gravity, const PxF32 gravityMagnitude, const PxF32 recipGravityMagnitude, 
@@ -4935,7 +4937,7 @@ PxVehicleDrive4W* vehDrive4W, PxVehicleWheelQueryResult* vehWheelQueryResults, P
 	END_TIMER(TIMER_ADMIN);
 	START_TIMER(TIMER_COMPONENTS_UPDATE);
 
-	//Center of mass local pose.
+	//Center of mass local pose. 汽车底盘
 	PxTransform carChassisCMLocalPose;
 	//Compute the transform of the center of mass.
 	PxTransform origCarChassisTransform;
@@ -7054,6 +7056,7 @@ void PxVehicleUpdate::update
 	const PxF32 gravityMagnitude=gravity.magnitude();
 	const PxF32 recipGravityMagnitude=1.0f/gravityMagnitude;
 
+//    迭代每个车辆
 	for(PxU32 i=0;i<numVehicles;i++)
 	{
 		PxVehicleWheels* vehWheels=vehicles[i];
